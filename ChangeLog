@@ -1,3 +1,16 @@
+2003-03-18  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* Jobs.pm: Bump version number to 0.04.
+
+	* README, Jobs.pm (start_job): Allow "-" to be specified as the
+	command if IPC::Open3 supports it.  Contributed by Adam Spiers
+	<perl@adamspiers.org>.
+
+2002-12-08  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* Jobs.pm: Mention that you can get output events after the exit
+	event.
+
 2002-10-31  Jonathan Kamens  <jik@kamens.brookline.ma.us>
 
 	* Jobs.pm: Bump version number to 0.03.

@@ -17,7 +17,7 @@ To install this module type the following:
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2002 WorldWinner.com, Inc.
+Copyright (C) 2002-2003 WorldWinner.com, Inc.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
@@ -29,3 +29,4 @@ This module was written and is maintained by Jonathan Kamens
 bug fixes, enhancements, and/or useful suggestions:
 
   Paul GABORIT <gaborit@enstimac.fr>
+  Adam Spiers <perl@adamspiers.org>

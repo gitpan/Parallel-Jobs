@@ -19,7 +19,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %pids %dead_pids
 @ISA       = qw(Exporter);
 @EXPORT    = qw();
 @EXPORT_OK = qw(start_job watch_jobs);
-$VERSION   = 0.03;
+$VERSION   = 0.04;
 
 sub new_handle ();
 sub is_our_handle ($);
@@ -160,6 +160,9 @@ sub start_job {
 	carp(__PACKAGE__ . ": $@");
 	return undef;
     }
+
+    # If we skipped the exec in open3, we're still in the Perl child.
+    return $pid unless $pid;
 
     $pids{$pid}++;
     if ($capture_stdout) {
@@ -435,7 +438,10 @@ The Parallel::Jobs module allows you to run multiple jobs in parallel
 with fine-grained control over their stdin, stdout and stderr.
 
 You can specify the command to run as a single string or as a list
-specifying the command and its arguments, as in L<IPC::Open3>.
+specifying the command and its arguments, as in L<IPC::Open3>.  If
+your version of IPC::Open3 supports '-' as the command,
+Parallel::Jobs::start_job() will fork to a Perl child in a manner
+analogous to C<open(FOO, "-|")>.
 
 If your first argument is a reference to a hash, it can specify the
 parameters shown above.  By default, stdin for each job is set to
@@ -472,6 +478,10 @@ that was received, or an empty string if EOF was received.
 
 =back
 
+Note that it is possible to receive STDOUT or STDERR events from a
+process after its EXIT event, i.e., you may receive an EXIT event
+before you've read all of a process's output.
+
 If you mix some jobs for which you are capturing stdout and/or stderr
 with some jobs for which you are not, watch_jobs() may sometimes not
 notice that a job whose output isn't being captured has exited until a
@@ -483,7 +493,7 @@ Jonathan Kamens E<lt>jik@kamens.brookline.ma.usE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002 by WorldWinner.com, Inc.
+Copyright 2002-2003 by WorldWinner.com, Inc.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
