@@ -1,5 +1,5 @@
-Parallel::Jobs version 0.01
-==========================
+Parallel::Jobs
+==============
 
 The Parallel::Jobs module allows you to run jobs in parallel with
 access to their stdout and stderr.  That access is the biggest
@@ -21,3 +21,11 @@ Copyright (C) 2002 WorldWinner.com, Inc.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
+
+CREDITS
+
+This module was written and is maintained by Jonathan Kamens
+<jik@worldwinner.com>.  In addition, the following people contributed
+bug fixes, enhancements, and/or useful suggestions:
+
+  Paul GABORIT <gaborit@enstimac.fr>

@@ -13,13 +13,13 @@ use IPC::Open3;
 use File::Spec;
 use POSIX qw(:sys_wait_h);
 
-use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %pids
+use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %pids %dead_pids
 	    %stdout_handles %stderr_handles $debug);
 
 @ISA       = qw(Exporter);
 @EXPORT    = qw();
 @EXPORT_OK = qw(start_job watch_jobs);
-$VERSION   = 0.02;
+$VERSION   = 0.03;
 
 sub new_handle ();
 sub is_our_handle ($);
@@ -197,41 +197,50 @@ sub watch_jobs {
     my($data) = '';
     my($rbits, $ebits);
     my(@pids) = keys %pids;
+    my(@dead_pids) = keys %dead_pids;
 
-    if (! @pids) {
+    warn("watch_jobs: pids(@pids) dead_pids(@dead_pids)\n") if ($debug);
+    if (! (@pids || @dead_pids)) {
 	return ();
     }
 
-    foreach my $pid (@pids) {
+    foreach my $pid (@pids, @dead_pids) {
 	my($capturing) = $stdout_handles{$pid} || $stderr_handles{$pid};
-	if (! $capturing) {
+	if (! ($capturing || $dead_pids{$pid})) {
 	    push(@pid_only, $pid);
 	}
-	if ($stdout_handles{$pid}) {
-	    $stdout_to_pid{$stdout_handles{$pid}} = $pid;
-	}
-	if ($stderr_handles{$pid}) {
-	    $stderr_to_pid{$stderr_handles{$pid}} = $pid;
+	else {
+	    if ($stdout_handles{$pid}) {
+		$stdout_to_pid{$stdout_handles{$pid}} = $pid;
+	    }
+	    if ($stderr_handles{$pid}) {
+		$stderr_to_pid{$stderr_handles{$pid}} = $pid;
+	    }
 	}
     }
 
-    if (@pid_only == @pids) {
-	warn "Waiting for @pids to exit\n" if ($debug);
-	$pid = wait;
-	if ($pid == -1) {
-	    # This shouldn't happen.  Perhaps the caller waited on
-	    # processes himself.  Shame.
-	    return ();
+    if (! @dead_pids) {
+	if (@pid_only == @pids) {
+	    warn "Waiting for @pids to exit\n" if ($debug);
+	    $pid = wait;
+	    if ($pid == -1) {
+		# This shouldn't happen.  Perhaps the caller waited on
+		# processes himself.  Shame.
+		return ();
+	    }
+	    warn "$pid exited (wait)\n" if ($debug);
+	    delete $pids{$pid};
+	    return($pid, 'EXIT', $?);
 	}
-	warn "$pid exited (wait)\n" if ($debug);
-	delete $pids{$pid};
-	return($pid, 'EXIT', $?);
     }
 
     foreach my $pid (@pids) {
 	if (waitpid($pid, WNOHANG) > 0) {
 	    warn "$pid exited (waitpid)\n" if ($debug);
 	    delete $pids{$pid};
+	    if ($stdout_handles{$pid} || $stderr_handles{$pid}) {
+		$dead_pids{$pid}++;
+	    }
 	    return($pid, 'EXIT', $?);
 	}
     }
@@ -283,6 +292,10 @@ sub watch_jobs {
 	close($waiting);
 	delete $stdout_handles{$pid} if ($type eq 'STDOUT');
 	delete $stderr_handles{$pid} if ($type eq 'STDERR');
+	if ($dead_pids{$pid} &&
+	    ! ($stderr_handles{$pid} || $stdout_handles{$pid})) {
+	    delete $dead_pids{$pid};
+	}
     }
 
     return($pid, $type, $data);

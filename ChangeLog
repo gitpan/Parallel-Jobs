@@ -1,3 +1,12 @@
+2002-10-31  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* Jobs.pm: Bump version number to 0.03.
+
+	* Jobs.pm: Bug fixes from Paul GABORIT <gaborit@enstimac.fr> --
+	read output and close file handles from children who have already
+	exited, to avoid running out of file descriptors or missing output
+	when a child exits before we've had time to read its output.
+
 2002-06-13  Jonathan Kamens  <jik@kamens.brookline.ma.us>
 
 	* Jobs.pm: Increase version number to 0.02.
