@@ -19,7 +19,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %pids
 @ISA       = qw(Exporter);
 @EXPORT    = qw();
 @EXPORT_OK = qw(start_job watch_jobs);
-$VERSION   = 0.01;
+$VERSION   = 0.02;
 
 sub new_handle ();
 sub is_our_handle ($);
@@ -45,12 +45,17 @@ sub is_our_handle ($);
 my($fh_counter) = 0;
  
 sub start_job {
-    my($self) = shift;
     my(%params);
     my(@cmd);
     my($stdin_handle, $stdout_handle, $stderr_handle);
     my($capture_stdout, $capture_stderr);
     my($pid);
+
+    if ($_[0] eq __PACKAGE__) {
+	# Should we flame at the user for calling this function as a
+	# method instead of a function call?  Not sure.
+	shift;
+    }
 
     if (! @_) {
 	carp(__PACKAGE__ . ": No arguments specified");
@@ -183,7 +188,6 @@ sub is_our_handle ($) {
 }
 
 sub watch_jobs {
-    my($self) = shift;
     my(@pid_only);
     my(%stdout_to_pid, %stderr_to_pid);
     my($nfound, $waiting);
@@ -287,7 +291,6 @@ sub watch_jobs {
 # If the argument is true, operate silently.
 
 sub test ($) {
-    my($self) = shift;
     my($outfile) = sprintf('/tmp/%s.test.%d', __PACKAGE__, $$);
     my(@tests);
 
@@ -335,12 +338,12 @@ sub test ($) {
 	}
 
 	foreach my $command (@commands) {
-	    $pid = start_job($self, $params, @{$command});
+	    $pid = start_job($params, @{$command});
 	    die if (! $pid);
 	    print "Started @{$command} ($pid)\n" if ($debug);
 	}
 	 
-	while (($pid, $event, $data) = watch_jobs($self)) {
+	while (($pid, $event, $data) = watch_jobs()) {
 	    print "pid=$pid, event=$event, data=$data\n" if ($debug);
 	}
 
@@ -376,13 +379,13 @@ sub test ($) {
 	    die "Unexpected data in output file: $text";
 	}
 
-	start_job($self, {stdin_file=>$outfile}, 'cat');
-	watch_jobs($self);
+	start_job({stdin_file=>$outfile}, 'cat');
+	watch_jobs();
 
 	open(OUTFILE, $outfile) || croak;
 
-	start_job($self, {stdin_handle=>*OUTFILE{IO}}, 'cat');
-	watch_jobs($self);
+	start_job({stdin_handle=>*OUTFILE{IO}}, 'cat');
+	watch_jobs();
 
 	unlink($outfile);
     }
@@ -399,10 +402,11 @@ Parallel::Jobs - run jobs in parallel with access to their stdout and stderr
 =head1 SYNOPSIS
 
   use Parallel::Jobs;
+  use Parallel::Jobs qw(start_job watch_jobs);
 
-  $pid = Parallel::Jobs->start_job('cmd', ... args ...);
-  $pid = Parallel::Jobs->start_job('cmd ... args ...');
-  $pid = Parallel::Jobs->start_job({ stdin_file => filename |
+  $pid = Parallel::Jobs::start_job('cmd', ... args ...);
+  $pid = Parallel::Jobs::start_job('cmd ... args ...');
+  $pid = Parallel::Jobs::start_job({ stdin_file => filename |
 				     stdin_handle => *HANDLE,
 				     stdout_handle => *HANDLE |
 				     stdout_capture => 1,
@@ -410,7 +414,7 @@ Parallel::Jobs - run jobs in parallel with access to their stdout and stderr
 				     stderr_capture => 1 },
 				     ... cmd as above ...);
 
-  ($pid, $event, $data) = Parallel::Jobs->watch_jobs();
+  ($pid, $event, $data) = Parallel::Jobs::watch_jobs();
 
 =head1 DESCRIPTION
 
@@ -428,7 +432,7 @@ the calling process.
 If you specify stdin_handle, stdout_handle or stderr_handle, the
 handle will be copied the original handle will thus not be modified.
 
-Each time you call Parallel::Jobs->watch_jobs(), it will return the
+Each time you call Parallel::Jobs::watch_jobs(), it will return the
 process ID of the job with which an event has occured, the event type,
 and the data associated with that event.  If there are no more jobs to
 watch, watch_jobs() will return undef.

@@ -1,4 +1,20 @@
 2002-06-13  Jonathan Kamens  <jik@kamens.brookline.ma.us>
 
+	* Jobs.pm: Increase version number to 0.02.
+
+	The documentation should say to call Parallel::Jobs functions as
+	functions, not methods.
+
+	Document that start_job and watch_jobs can be exported.
+
+	Be resilient to the possibility of being called incorrectly as a
+	method rather than a function.
+
+2002-06-13  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* 1.t: Call Parallel::Jobs::test as a function, not a method.
+
+2002-06-13  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
 	* Initial release, version 0.01.
 
