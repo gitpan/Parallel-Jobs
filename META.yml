@@ -1,0 +1,33 @@
+---
+name: Parallel-Jobs
+version: 0.0.3
+author:
+  - Olivier Evalet <evaleto@gelux.ch>
+abstract: "[One line description of module's purpose here]"
+license: lgpl
+resources:
+  license: http://opensource.org/licenses/artistic-license.php
+requires:
+  Data::Serializer: 0
+  File::Find::Rule: 0
+  File::Temp: 0
+  Getopt::Long: 0
+  perl: 5.8.1
+provides:
+  Parallel::Jobs:
+    file: lib/Parallel/Jobs.pm
+    version: 0.0.3
+  Parallel::Jobs::Backend:
+    file: lib/Parallel/Jobs/Backend.pm
+  Parallel::Jobs::Backend::Local:
+    file: lib/Parallel/Jobs/Backend/Local.pm
+  Parallel::Jobs::Backend::Null:
+    file: lib/Parallel/Jobs/Backend/Null.pm
+  Parallel::Jobs::Backend::SSH:
+    file: lib/Parallel/Jobs/Backend/SSH.pm
+  Parallel::Jobs::Backend::XMLRPC:
+    file: lib/Parallel/Jobs/Backend/XMLRPC.pm
+generated_by: Module::Build version 0.28
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2

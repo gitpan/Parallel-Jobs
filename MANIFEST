@@ -1,6 +1,13 @@
-ChangeLog
-Jobs.pm
-Makefile.PL
+Changes
 MANIFEST
+META.yml # Will be created by "make dist"
+Makefile.PL
 README
-t/1.t
+lib/Parallel/Jobs.pm
+lib/Parallel/Jobs/Backend.pm
+lib/Parallel/Jobs/Backend/SSH.pm
+lib/Parallel/Jobs/Backend/Local.pm
+lib/Parallel/Jobs/Backend/Null.pm
+lib/Parallel/Jobs/Backend/XMLRPC.pm
+t/00.load.t
+t/process-0.t
