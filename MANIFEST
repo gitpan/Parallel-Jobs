@@ -1,13 +1,7 @@
-Changes
-MANIFEST
-META.yml # Will be created by "make dist"
+ChangeLog
+Jobs.pm
 Makefile.PL
+MANIFEST
 README
-lib/Parallel/Jobs.pm
-lib/Parallel/Jobs/Backend.pm
-lib/Parallel/Jobs/Backend/SSH.pm
-lib/Parallel/Jobs/Backend/Local.pm
-lib/Parallel/Jobs/Backend/Null.pm
-lib/Parallel/Jobs/Backend/XMLRPC.pm
-t/00.load.t
-t/process-0.t
+t/1.t
+META.yml                                 Module meta-data (added by MakeMaker)

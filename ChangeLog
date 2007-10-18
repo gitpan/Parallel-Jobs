@@ -1,0 +1,61 @@
+2007-10-18  Jonathan Kamens  <jik@jik2.kamens.brookline.ma.us>
+
+	* Jobs.pm: Increase version to 0.05.
+
+	Fix file descriptor leaks.
+	
+	Wait for everything we can every time we go through watch_jobs, to
+	prevent resource starvation.  Queue events that we haven't
+	returned yet and return them when there's nothing else to wait
+	for.
+
+	Delete a paragraph from the doc that is no longer true about
+	delayed returns when mixing captured and non-captured jobs.
+
+2003-03-21  Jonathan Kamens  <jik@jik2.kamens.brookline.ma.us>
+
+	* Jobs.pm: Use File::Temp for generating temporary file during
+	tests.
+
+2003-03-18  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* Jobs.pm: Bump version number to 0.04.
+
+	* README, Jobs.pm (start_job): Allow "-" to be specified as the
+	command if IPC::Open3 supports it.  Contributed by Adam Spiers
+	<perl@adamspiers.org>.
+
+2002-12-08  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* Jobs.pm: Mention that you can get output events after the exit
+	event.
+
+2002-10-31  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* Jobs.pm: Bump version number to 0.03.
+
+	* Jobs.pm: Bug fixes from Paul GABORIT <gaborit@enstimac.fr> --
+	read output and close file handles from children who have already
+	exited, to avoid running out of file descriptors or missing output
+	when a child exits before we've had time to read its output.
+
+2002-06-13  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* Jobs.pm: Increase version number to 0.02.
+
+	The documentation should say to call Parallel::Jobs functions as
+	functions, not methods.
+
+	Document that start_job and watch_jobs can be exported.
+
+	Be resilient to the possibility of being called incorrectly as a
+	method rather than a function.
+
+2002-06-13  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* 1.t: Call Parallel::Jobs::test as a function, not a method.
+
+2002-06-13  Jonathan Kamens  <jik@kamens.brookline.ma.us>
+
+	* Initial release, version 0.01.
+
