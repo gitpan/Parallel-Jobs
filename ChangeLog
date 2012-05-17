@@ -1,9 +1,22 @@
+2012-05-16  root  <root@jik2.kamens.brookline.ma.us>
+
+	* Jobs.pm: Increase version to 0.06.
+
+	Support "nohang" argument to watch_jobs.
+
+	Add copyright 2012 to myself.
+
+	* Jobs.pm, Makefile: Update my email address.
+
+	* 1.t: Make perl 5.15 happy by not using the unquoted word "plan"
+	in a test case.
+
 2007-10-18  Jonathan Kamens  <jik@jik2.kamens.brookline.ma.us>
 
 	* Jobs.pm: Increase version to 0.05.
 
 	Fix file descriptor leaks.
-	
+
 	Wait for everything we can every time we go through watch_jobs, to
 	prevent resource starvation.  Queue events that we haven't
 	returned yet and return them when there's nothing else to wait

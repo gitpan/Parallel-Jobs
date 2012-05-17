@@ -20,7 +20,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %pids %dead_pids
 @ISA       = qw(Exporter);
 @EXPORT    = qw();
 @EXPORT_OK = qw(start_job watch_jobs);
-$VERSION   = 0.05;
+$VERSION   = 0.06;
 
 sub new_handle ();
 sub is_our_handle ($);
@@ -197,6 +197,7 @@ sub is_our_handle ($) {
 }
 
 sub watch_jobs {
+    my(%args);
     my(@pid_only);
     my(%stdout_to_pid, %stderr_to_pid);
     my($nfound, $waiting);
@@ -205,6 +206,10 @@ sub watch_jobs {
     my($rbits, $ebits);
     my(@pids) = keys %pids;
     my(@dead_pids) = keys %dead_pids;
+
+    if (ref $_[0] eq 'HASH') {
+	%args = %{$_[0]};
+    }
 
     warn("watch_jobs: pids(@pids) dead_pids(@dead_pids)\n") if ($debug);
     if (! (@pids || @dead_pids)) {
@@ -263,14 +268,16 @@ sub watch_jobs {
 
 	warn "Calling select() to wait for output from jobs\n" if ($debug);
 
-	$nfound = select($rbits, undef, $ebits = $rbits, @events ? 0 : undef);
+	$nfound = select($rbits, undef, $ebits = $rbits,
+			 (@events || $args{nohang}) ? 0 : undef);
 
-	if (@events && ! $nfound) {
+	if (! $nfound) {
+	    if (! (@events || $args{nohang})) {
+		die(__PACKAGE__ . ": Internal error: Select unexpectedly " .
+		    "returned no pending data") if (! $nfound);
+	    }
 	    last;
 	}
-
-	die(__PACKAGE__ . ": Internal error: Select unexpectedly " .
-	    "returned no pending data") if (! $nfound);
 
 	($waiting) = grep(vec($rbits, fileno($_), 1) || vec($ebits, fileno($_), 1),
 			  keys %stdout_to_pid, keys %stderr_to_pid);
@@ -324,7 +331,12 @@ sub watch_jobs {
 	push(@events, [$pid, $type, $data]);
     }
 
-    return(@{shift @events});
+    if (@events) {
+	return(@{shift @events});
+    }
+    else {
+	return ();
+    }
 }
 
 # If the argument is true, operate silently.
@@ -452,6 +464,7 @@ Parallel::Jobs - run jobs in parallel with access to their stdout and stderr
 				     ... cmd as above ...);
 
   ($pid, $event, $data) = Parallel::Jobs::watch_jobs();
+  ($pid, $event, $data) = Parallel::Jobs::watch_jobs({nohang => 1});
 
 =head1 DESCRIPTION
 
@@ -475,7 +488,9 @@ handle will be copied the original handle will thus not be modified.
 Each time you call Parallel::Jobs::watch_jobs(), it will return the
 process ID of the job with which an event has occured, the event type,
 and the data associated with that event.  If there are no more jobs to
-watch, watch_jobs() will return undef.
+watch, watch_jobs() will return undef. If you want to poll for pending
+events without hanging if there are none currently available, specify
+a hash with the key "nohang" set to a true value.
 
 The relevant events are as follows:
 
@@ -505,11 +520,12 @@ before you've read all of a process's output.
 
 =head1 AUTHOR
 
-Jonathan Kamens E<lt>jik@kamens.brookline.ma.usE<gt>
+Jonathan Kamens E<lt>jik@kamens.usE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2002-2003 by WorldWinner.com, Inc.
+Copyright 2012 Jonathan Kamens.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
