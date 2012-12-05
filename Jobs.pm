@@ -20,7 +20,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %pids %dead_pids
 @ISA       = qw(Exporter);
 @EXPORT    = qw();
 @EXPORT_OK = qw(start_job watch_jobs);
-$VERSION   = 0.06;
+$VERSION   = 0.07;
 
 sub new_handle ();
 sub is_our_handle ($);
@@ -230,7 +230,7 @@ sub watch_jobs {
 	}
     }
 
-    if (! @dead_pids) {
+    if (! (@dead_pids || $args{nohang})) {
 	if (@pid_only == @pids) {
 	    if (@events) {
 		return(@{shift @events});
