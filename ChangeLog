@@ -1,3 +1,16 @@
+2013-04-18  Jonathan Kamens  <jik@kamens.us>
+
+	* Jobs.pm: Increase version to 0.09.
+
+	* Makefile.PL: Add license to CPAN package.
+
+	* Jobs.pm: Bug fix from Greg Lindahl <greg@blekko.com>: Allow
+	output from processes to be the number 0 without falsely
+	concluding that the process has reached EOF.
+
+	* Jobs.pm, MANIFEST: Merge relevant README content into POD
+	documentation and get rid of README.
+
 2013-01-15  Jonathan Kamens  <jik@kamens.brookline.ma.us>
 
 	* Increase version to 0.08.

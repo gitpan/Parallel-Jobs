@@ -20,7 +20,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION %pids %dead_pids
 @ISA       = qw(Exporter);
 @EXPORT    = qw();
 @EXPORT_OK = qw(start_job watch_jobs);
-$VERSION   = 0.08;
+$VERSION   = 0.09;
 
 sub new_handle ();
 sub is_our_handle ($);
@@ -308,7 +308,7 @@ sub watch_jobs {
 	    $nfound2 = select($rbits, undef, $ebits = $rbits, 0);
 	} while ($ret && $nfound2);
 
-	if ($data) {
+	if ($data ne '') {
 	    warn "Got $type output ($data) from $pid\n" if ($debug);
 	}
 	else {
@@ -470,7 +470,9 @@ Parallel::Jobs - run jobs in parallel with access to their stdout and stderr
 =head1 DESCRIPTION
 
 The Parallel::Jobs module allows you to run multiple jobs in parallel
-with fine-grained control over their stdin, stdout and stderr.
+with fine-grained control over their stdin, stdout and stderr.  That
+control is the biggest difference between this module and others such
+as Parallel::ForkManager.
 
 You can specify the command to run as a single string or as a list
 specifying the command and its arguments, as in L<IPC::Open3>.  If
@@ -523,10 +525,32 @@ before you've read all of a process's output.
 
 Jonathan Kamens E<lt>jik@kamens.usE<gt>
 
+=head1 CREDITS
+
+This module was written and is maintained by Jonathan Kamens
+(originally E<lt>jik@worldwinner.comE<gt>, currently
+E<lt>jik@kamens.usE<gt>).  In addition, the following people
+contributed bug fixes, enhancements, and/or useful suggestions:
+
+=over
+
+=item Paul GABORIT E<lt>gaborit@enstimac.frE<gt>
+
+=item Adam Spiers E<lt>perl@adamspiers.orgE<gt>
+
+=item Greg Lindahl E<lt>greg@blekko.comE<gt>
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2003 by WorldWinner.com, Inc.
-Copyright 2012 Jonathan Kamens.
+=over
+
+=item Copyright 2002-2003 by WorldWinner.com, Inc.
+
+=item Copyright 2012, 2013 Jonathan Kamens.
+
+=back
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
